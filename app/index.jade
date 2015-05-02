@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+  head
+    title Geo Neighbours
+    script(src='vendor/d3/d3.min.js')
+    script(src='vendor/angular/angular.min.js')
+    script(src='vendor/angular-ui-router/release/angular-ui-router.min.js')
+    script(src='vendor/angular-cache/dist/angular-cache.min.js')
+    script(src='geoneighbours.min.js')
+  body(ng-app='gnApp')
+    h1 Geo Neighbours
+    #menu
+      ul
+        li
+          a(ui-sref='gn') Geo Neighbours
+        li
+          a(ui-sref='about') About
+    #container
+        div(ui-view)

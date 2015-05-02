@@ -1,0 +1,15 @@
+#gn-left-col
+  input(type='text', ng-model='searchterm')
+  #country-autocomplete-results
+    ul(ng-hide='!searchterm || searchterm.length < 3')
+      li( ng-repeat='country in countries | filter:{countryName:searchterm}', 
+          ng-click='switchCountry(country.geonameId)') {{country.countryName}} ({{country.countryCode}})
+#gn-right-col
+  hr
+  h3 {{selectedCountry.countryName}} ({{selectedCountry.countryCode}}) neighbours :
+  ul
+    li(ng-repeat='country in neighbours', ng-click='switchCountry(country.geonameId)') {{country.countryName}} ({{country.countryCode}})
+
+
+//- pre {{countries | json}}
+//- pre {{searchterm}}
