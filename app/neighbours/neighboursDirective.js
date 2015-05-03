@@ -77,7 +77,7 @@ app.directive('neighbours', [function(){
             while (theyIntersect(c, previous)) {
               c.cx = width/2 + range * Math.cos(angle);
               c.cy = height/2 + range * Math.sin(angle);
-              range += range/3;
+              range += range/4;
             }
           }
 
@@ -87,7 +87,7 @@ app.directive('neighbours', [function(){
             while (theyIntersect(c, next)) {
               c.cx = width/2 + range * Math.cos(angle);
               c.cy = height/2 + range * Math.sin(angle);
-              range += range/3;
+              range += range/2;
             }
           }
 
@@ -101,17 +101,43 @@ app.directive('neighbours', [function(){
           .append('circle')
           .attr('class', 'country_circle')
           .attr('style', 'cursor:pointer;')
-          .style('fill', 'red')
           .style('fill-opacity', '0.3')
           .on('click', function(d, i) {
             scope.switchCountry(d.geonameId);
           });
 
-        var circleAttr = circles.transition()
+        circles
+          .style('fill', function(d, i) {
+            if (i === 0)
+              return 'green';
+            return 'red';
+          })
+          .transition()
           .attr('cx', function(d){ return d.cx; })
           .attr('cy', function(d){ return d.cy; })
           .attr('r', function(d){ return d.radius; });
 
+        var flags = svg.selectAll('.flag').data(circles_data, function(d) { return d.geonameId; });
+
+        flags.exit().remove();
+        flags.enter()
+          .append('svg:image')
+          .attr('class', 'flag')
+          .attr('width', 32)
+          .attr('height', 32)
+          .attr('xlink:href', function(d) {
+            return 'assets/flags/' + d.countryCode + '.png';
+          })
+          .attr('style', 'cursor:pointer;')
+          .on('click', function(d, i) {
+            scope.switchCountry(d.geonameId);
+          });
+
+        flags.transition()
+          .attr('x', function(d){ return d.cx - 16; })
+          .attr('y', function(d){ return d.cy - 16; });
+
+        /*
         var c_names = svg.selectAll('.c_name').data(circles_data, function(d) { return d.geonameId; });
         c_names.exit().remove();
         c_names.enter()
@@ -129,6 +155,7 @@ app.directive('neighbours', [function(){
         var c_namesAttr = c_names.transition()
           .attr('x', function(d){ return d.cx - 10; })
           .attr('y', function(d){ return d.cy + 5; });
+        */
 
       });
 

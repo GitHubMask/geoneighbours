@@ -17,6 +17,8 @@ var jadeFiles = './app/**/*.jade';
 var jsFiles = './app/**/*.js';
 var finalJs = 'geoneighbours.js';
 var finalMinJs = 'geoneighbours.min.js';
+var assetsSrc = './assets/**';
+var assetsDest = public + '/assets';
 
 // --- Lint
 gulp.task('lint', function() {
@@ -33,6 +35,12 @@ gulp.task('miniglify', function(){
     .pipe(rename(finalMinJs))
     .pipe(uglify())
     .pipe(gulp.dest(public));
+});
+
+// --- Assets
+gulp.task('assets', function(){
+  gulp.src(assetsSrc)
+    .pipe(gulp.dest(assetsDest));
 });
 
 // --- Jade to HTML
@@ -63,4 +71,4 @@ gulp.task('watch', function() {
 });
 
 // --- Default
-gulp.task('default', ['bower', 'lint', 'miniglify', 'jade', 'start', 'watch']);
+gulp.task('default', ['assets', 'bower', 'lint', 'miniglify', 'jade', 'start', 'watch']);
