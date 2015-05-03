@@ -41,8 +41,8 @@ app.directive('neighbours', [function(){
   return {
     restrict: 'E',
     link: function(scope, element) {
-      var width = 800;
-      var height = 500;
+      var width = 600;
+      var height = 400;
       var radius = 45;
 
       var svg = d3.select(element[0])
@@ -101,7 +101,7 @@ app.directive('neighbours', [function(){
           .append('circle')
           .attr('class', 'country_circle')
           .attr('style', 'cursor:pointer;')
-          .style('fill-opacity', '0.3')
+          .style('fill-opacity', '0.6')
           .on('click', function(d, i) {
             scope.switchCountry(d.geonameId);
           });
@@ -110,7 +110,7 @@ app.directive('neighbours', [function(){
           .style('fill', function(d, i) {
             if (i === 0)
               return 'green';
-            return 'red';
+            return 'orange';
           })
           .transition()
           .attr('cx', function(d){ return d.cx; })
