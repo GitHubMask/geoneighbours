@@ -74,6 +74,6 @@ app.controller('gnCtrl', ['$scope', 'geonames', 'r_countries', function($scope, 
   };
 
   // --- Init
-  $scope.switchCountry($scope.countries[0].geonameId);
+  $scope.switchCountry(3017382);
 
 }]);

@@ -13,7 +13,7 @@ app.provider('geonames', function() {
     };
 
     this.$get = ['$http', '$q', 'CacheFactory', function($http, $q, CacheFactory) {
-      // --- Propagate initialized stuff
+
       var params = this.params;
 
       var geoCache = false;

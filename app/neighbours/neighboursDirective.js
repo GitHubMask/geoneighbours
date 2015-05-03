@@ -68,20 +68,18 @@ app.directive('neighbours', [function(){
           angle += step;
         }
 
-        console.log(circles_data);
-
         var circles = svg.selectAll('.country_circle').data(circles_data, function(d) { return d.id; });
         circles.exit().remove();
         circles.enter()
           .append('circle')
           .attr('class', 'country_circle')
+          .attr('style', 'cursor:pointer;')
           .style('fill', function(d){ return d.fill; })
           .on('click', function(d, i) {
             scope.switchCountry(d.id);
           });
 
-        var circleAttr = circles
-          .transition()
+        var circleAttr = circles.transition()
           .attr('cx', function(d){ return d.cx; })
           .attr('cy', function(d){ return d.cy; })
           .attr('r', function(d){ return d.radius; });
@@ -95,12 +93,12 @@ app.directive('neighbours', [function(){
           .attr("font-family", "sans-serif")
           .attr("font-size", "15px")
           .attr("fill", "black")
+          .attr('style', 'cursor:pointer;')
           .on('click', function(d, i) {
             scope.switchCountry(d.id);
           });
 
-        var c_namesAttr = c_names
-          .transition()
+        var c_namesAttr = c_names.transition()
           .attr('x', function(d){ return d.cx - 10; })
           .attr('y', function(d){ return d.cy + 5; });
 
