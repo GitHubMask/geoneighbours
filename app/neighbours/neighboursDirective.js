@@ -43,7 +43,7 @@ app.directive('neighbours', [function(){
 
       scope.$watch('neighbours', function(newVal, oldVal){
         var current = scope.selectedCountry;
-        var sortedNeighbours = sortNeighbours(scope.selectedCountry, scope.neighbours);
+        var sortedNeighbours = sortNeighbours(scope.selectedCountry, newVal);
 
         var circles_data = [{
           id: current.geonameId,

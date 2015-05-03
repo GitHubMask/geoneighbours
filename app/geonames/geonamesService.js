@@ -32,9 +32,9 @@ app.provider('geonames', function() {
           for (var p in qparams)
             querystring.push(encodeURIComponent(p) + "=" + encodeURIComponent(qparams[p]));
 
-          url = params.endpoint + '/' + url;
+          url = params.endpoint + '/' + url + 'JSON';
           if (querystring.length)
-            url = url + 'JSON?' + querystring.join("&");
+            url = url + '?' + querystring.join("&");
 
           return {
             method: method || 'GET',
