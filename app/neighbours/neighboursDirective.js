@@ -19,22 +19,31 @@ app.directive('neighbours', [function(){
     return right_sort.concat(left_sort);
   }
 
-  // --- Random color !
-  function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+  // --- Add circle data to existing object
+  function addCircleData(src, cx, cy, radius) {
+    var data = _.clone(src);
+    _.assign(data, {
+      cx: cx,
+      cy: cy,
+      radius: radius,
+    });
+    return data;
+  }
+
+  // --- Do my circle intersect ?
+  function theyIntersect(c1, c2) {
+    var radi_sum = c1.radius + c2.radius;
+    var dist = Math.sqrt(Math.pow(c1.cx - c2.cx,2) + Math.pow(c1.cy - c2.cy,2));
+    return radi_sum >= dist;
   }
 
   // --- The directive
   return {
     restrict: 'E',
     link: function(scope, element) {
-      var width = 700;
-      var height = 400;
+      var width = 800;
+      var height = 500;
+      var radius = 45;
 
       var svg = d3.select(element[0])
         .append('svg')
@@ -45,38 +54,57 @@ app.directive('neighbours', [function(){
         var current = scope.selectedCountry;
         var sortedNeighbours = sortNeighbours(scope.selectedCountry, newVal);
 
-        var circles_data = [{
-          id: current.geonameId,
-          label: current.countryCode,
-          cx: width/2,
-          cy: height/2,
-          radius: 50,
-          fill: getRandomColor()
-        }];
+        // --- The circles
+        var circles_data = [];
 
-        var angle = -(Math.PI / 2);
+        // --- The current one
+        circles_data.push(addCircleData(current, width/2, height/2, radius));
+
+        // --- The neighbours
+        var angle = -(Math.PI/2);
         var step = (2*Math.PI) / sortedNeighbours.length;
         for (var i=0; i<sortedNeighbours.length;i++) {
-          circles_data.push({
-            id: sortedNeighbours[i].geonameId,
-            label: sortedNeighbours[i].countryCode,
-            cx: width/2 + 150 * Math.cos(angle),
-            cy: height/2 + 150 * Math.sin(angle),
-            radius: 40,
-            fill: getRandomColor(),
-          });
+          var range = 110;
+          var c = {
+            cx: width/2 + range * Math.cos(angle),
+            cy: height/2 + range * Math.sin(angle),
+            radius: current.population > sortedNeighbours[i].population ? radius - 15 : radius + 15,
+          };
+
+          // All but the first : check if it collides with the previous one
+          if (i !== 0) {
+            var previous = circles_data[i];
+            while (theyIntersect(c, previous)) {
+              c.cx = width/2 + range * Math.cos(angle);
+              c.cy = height/2 + range * Math.sin(angle);
+              range += range/3;
+            }
+          }
+
+          // Last one must not collide with the first one
+         if (i === (sortedNeighbours.length - 1)) {
+            var next = circles_data[1];
+            while (theyIntersect(c, next)) {
+              c.cx = width/2 + range * Math.cos(angle);
+              c.cy = height/2 + range * Math.sin(angle);
+              range += range/3;
+            }
+          }
+
+          circles_data.push(addCircleData(sortedNeighbours[i], c.cx, c.cy, c.radius));
           angle += step;
         }
 
-        var circles = svg.selectAll('.country_circle').data(circles_data, function(d) { return d.id; });
+        var circles = svg.selectAll('.country_circle').data(circles_data, function(d) { return d.geonameId; });
         circles.exit().remove();
         circles.enter()
           .append('circle')
           .attr('class', 'country_circle')
           .attr('style', 'cursor:pointer;')
-          .style('fill', function(d){ return d.fill; })
+          .style('fill', 'red')
+          .style('fill-opacity', '0.3')
           .on('click', function(d, i) {
-            scope.switchCountry(d.id);
+            scope.switchCountry(d.geonameId);
           });
 
         var circleAttr = circles.transition()
@@ -84,18 +112,18 @@ app.directive('neighbours', [function(){
           .attr('cy', function(d){ return d.cy; })
           .attr('r', function(d){ return d.radius; });
 
-        var c_names = svg.selectAll('.c_name').data(circles_data, function(d) { return d.id; });
+        var c_names = svg.selectAll('.c_name').data(circles_data, function(d) { return d.geonameId; });
         c_names.exit().remove();
         c_names.enter()
           .append('text')
           .attr('class', 'c_name')
-          .text(function(d){ return d.label; })
+          .text(function(d){ return d.countryName; })
           .attr("font-family", "sans-serif")
           .attr("font-size", "15px")
           .attr("fill", "black")
           .attr('style', 'cursor:pointer;')
           .on('click', function(d, i) {
-            scope.switchCountry(d.id);
+            scope.switchCountry(d.geonameId);
           });
 
         var c_namesAttr = c_names.transition()
