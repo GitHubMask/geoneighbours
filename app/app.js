@@ -50,25 +50,30 @@ app.controller('gnCtrl', ['$scope', 'geonames', 'r_countries', function($scope, 
 
   'use strict';
 
-  // --- Init
   $scope.countries = r_countries;
-  $scope.selectedCountry = $scope.countries[0];
+  $scope.selectedCountry = undefined;
   $scope.neighbours = [];
 
   $scope.switchCountry = function(geonameId) {
-    for (var i=0; i<$scope.countries.length;i++) {
-      if ($scope.countries[i].geonameId === geonameId)
-        $scope.selectedCountry = $scope.countries[i];
-    }
-  }
-
-  $scope.$watch('selectedCountry', function(newVal, oldVal){
     geonames
-      .getNeighbours(newVal.geonameId)
+      .getCountryInfos(geonameId)
+      .then(function(country){
+        $scope.selectedCountry = country;
+        $scope.updateNeighbours();
+      })
+    ;
+  };
+
+  $scope.updateNeighbours = function() {
+    geonames
+      .getNeighbours($scope.selectedCountry.geonameId)
       .then(function(stuff){
         $scope.neighbours = stuff;
-      });
-  });
+      })
+    ;
+  };
 
+  // --- Init
+  $scope.switchCountry($scope.countries[0].geonameId);
 
 }]);
