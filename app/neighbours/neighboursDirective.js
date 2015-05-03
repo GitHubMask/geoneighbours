@@ -82,7 +82,7 @@ app.directive('neighbours', [function(){
           }
 
           // Last one must not collide with the first one
-         if (i === (sortedNeighbours.length - 1)) {
+         if (sortedNeighbours.length > 1 && i === (sortedNeighbours.length - 1)) {
             var next = circles_data[1];
             while (theyIntersect(c, next)) {
               c.cx = width/2 + range * Math.cos(angle);
