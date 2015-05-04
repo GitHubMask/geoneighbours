@@ -68,26 +68,17 @@ app.directive('neighbours', [function(){
           var c = {
             cx: width/2 + range * Math.cos(angle),
             cy: height/2 + range * Math.sin(angle),
-            radius: current.population > sortedNeighbours[i].population ? radius - 15 : radius + 15,
+            radius: radius - 15,//current.population > sortedNeighbours[i].population ? radius - 15 : radius + 15,
           };
 
           // All but the first : check if it collides with the previous one
-          if (i !== 0) {
-            var previous = circles_data[i];
-            while (theyIntersect(c, previous)) {
+          // Last one must not collide with the first one
+          if (i !== 0 || (sortedNeighbours.length > 1 && i === (sortedNeighbours.length - 1))) {
+            var compareWith = (i === (sortedNeighbours.length - 1)) ? circles_data[1] : circles_data[i];
+            while (theyIntersect(c, compareWith)) {
               c.cx = width/2 + range * Math.cos(angle);
               c.cy = height/2 + range * Math.sin(angle);
               range += range/4;
-            }
-          }
-
-          // Last one must not collide with the first one
-         if (sortedNeighbours.length > 1 && i === (sortedNeighbours.length - 1)) {
-            var next = circles_data[1];
-            while (theyIntersect(c, next)) {
-              c.cx = width/2 + range * Math.cos(angle);
-              c.cy = height/2 + range * Math.sin(angle);
-              range += range/2;
             }
           }
 
